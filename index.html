@@ -3,83 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMI Calculator</title>
-    <style>
-        body {
-            background-color: #1e1e1e; /* Dark background color */
-            color: #ffffff; /* Light font color for contrast */
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-        }
-        h1, h3 {
-            color: #ffcc00; /* Bright color for headings */
-            margin: 10px 0;
-        }
-        form {
-            background-color: #2c2c2c; /* Slightly lighter background for form */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 400px; /* Limit the form width for larger screens */
-        }
-        label {
-            font-size: 1.2em;
-        }
-        input {
-            padding: 10px;
-            margin: 10px 0;
-            width: 100%;
-            border: 1px solid #444;
-            border-radius: 5px;
-            background-color: #333;
-            color: #fff;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #ffcc00; /* Button color matching the heading */
-            color: #1e1e1e;
-            border: none;
-            border-radius: 5px;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-            margin: 10px 0;
-        }
-        button:hover {
-            background-color: #ffaa00; /* Slightly darker on hover */
-        }
-        .refresh-btn {
-            background-color: #ff4500; /* Different color for refresh button */
-            color: #fff;
-        }
-        .refresh-btn:hover {
-            background-color: #ff6347; /* Slightly darker on hover */
-        }
-    </style>
+    <title>Password Generator</title>
 </head>
 <body>
-    <h1>Calculate Your BMI Here</h1>
-    <h3>Enter Your Height And Weight To Calculate Your BMI</h3>
-    <form method="POST" action="/">
-        <label for="weight">Weight (KG):</label>
-        <input type="text" id="weight" name="weight" placeholder="Enter Your Weight Here" required><br><br>
-
-        <label for="height">Height (Meter):</label>
-        <input type="text" id="height" name="height" placeholder="Enter Your Height Here" required><br><br>
-
-        <button type="submit" style="cursor: pointer;">Calculate BMI</button>
+    <h1>Generate Strong Password Here</h1>
+    <form id="passwordForm">
+        <label for="length">Password Length:</label>
+        <input type="number" id="length" name="length" min="8" max="20" required><br><br>
+        <label for="uppercase">Include uppercase letters:</label>
+        <input type="checkbox" id="uppercase" name="uppercase" checked><br><br>
+        <label for="lowercase">Include lowercase letters:</label>
+        <input type="checkbox" id="lowercase" name="lowercase" checked><br><br>
+        <label for="numbers">Include numbers:</label>
+        <input type="checkbox" id="numbers" name="numbers" checked><br><br>
+        <label for="symbols">Include symbols:</label>
+        <input type="checkbox" id="symbols" name="symbols" checked><br><br>
+        <button type="button" onclick="generatePassword()">Generate Password</button>
+        <p id="generatedPassword"></p>
+        <p id="passwordStrength"></p>
+        <script src="script.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+        <script>
+            function generatePassword() {
+                const length = parseInt(document.getElementById('length').value);
+                const uppercase = document.getElementById('uppercase').checked;
+                const lowercase = document.getElementById('lowercase').checked;
+                const numbers = document.getElementById('numbers').checked;
+                const symbols = document.getElementById('symbols').checked;
+                
+                const characters = [];
+                if (uppercase) characters.push(...Array.from({ length: 26 }, (_, i) => String.fromCharCode(i + 65)));
+                if (lowercase) characters.push(...Array.from({ length: 26 }, (_, i) => String.fromCharCode(i + 97)));
+                if (numbers) characters.push(...Array.from({ length: 10 }, (_, i) => String.fromCharCode(i + 48)));
+                if (symbols) characters.push(...'!@#$%^&*()_+=-[]{}|;:,.<>/?');
+                
+                let password = '';
+                for (let i = 0; i < length; i++) {
+                    password += characters[Math.floor(Math.random() * characters.length)];
+                }
+                
+                document.getElementById('generatedPassword').textContent = password;
+                
+                const strength = passwordStrength(password);
+                document.getElementById('passwordStrength').textContent = `Password strength: ${strength}`;
+                
+                // Encrypt the password using AES-256-CBC
+                const key = CryptoJS.enc.Hex.parse('your-secret-key-here');
+                const encrypted = CryptoJS.AES.encrypt(password, key, { mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+                localStorage.setItem('encryptedPassword', encrypted.toString());
+            }
+            
+            function passwordStrength(password) {
+                const strength = {
+                    'Very Weak': 0,
+                    'Weak': 1,
+                    'Moderate': 2,
+                    'Strong': 3,
+                    'Very Strong': 4
+                };
+                
+                let score = 0;
+                
+                // Check length
+                if (password.length >= 8) score++;
+                
+                // Check uppercase letters
+                if (/[A-Z]/.test(password)) score++;
+                
+                // Check lowercase letters
+                if (/[a-z]/.test(password)) score++;
+                
+                // Check numbers
+                if (/\d/.test(password)) score++;
+                
+                // Check symbols
+                if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) score++;
+                
+                return Object.keys(strength)[strength[Object.keys(strength).find((_, i) => i >= score)]];
+            }
+            
+        </script>
+        <p>Note: The generated password and strength are stored in local storage. To retrieve them, open the console in your browser developer tools and run localStorage.getItem('encryptedPassword').</p>
     </form>
-
-    {% if bmi %}
-        <p id="bmiResult">{{ bmi }}</p>
-        <p id="categoryResult">{{ category }}</p>
-    {% endif %}
 </body>
 </html>
