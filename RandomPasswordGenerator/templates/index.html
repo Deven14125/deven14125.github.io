@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Generator</title>\
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            /* Choose a futuristic font */
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #151515;
+            /* Dark background for a futuristic feel */
+        }
+        
+        .password-generator {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            background-color: #222222;
+            /* Darker background for the generator */
+            color: #fff;
+            /* White text for better visibility */
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #ff9900;
+            /* A vibrant orange for a futuristic touch */
+        }
+        
+        form {
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #888888;
+            /* Lighter gray for labels */
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #333333;
+            /* Darker background for input fields */
+            color: #fff;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #ff9900;
+            /* Matching the header color */
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        
+        button:hover {
+            background-color: #ffcc00;
+        }
+        
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ff9900;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="password-generator">
+        <h1>Password Generator</h1>
+        <form method="post">
+            <label for="length">Password Length:</label>
+            <input type="number" id="length" name="length" min="8" max="20" required>
+
+            <label for="uppercase">Include Uppercase Letters:</label>
+            <input type="checkbox" id="uppercase" name="uppercase" checked>
+
+            <label for="lowercase">Include Lowercase Letters:</label>
+            <input type="checkbox" id="lowercase" name="lowercase" checked>
+
+            <label for="numbers">Include Numbers:</label>
+            <input type="checkbox" id="numbers" name="numbers" checked>
+
+            <label for="symbols">Include Symbols:</label>
+            <input type="checkbox" id="symbols" name="symbols" checked>
+
+            <button type="submit">Generate Password</button>
+        </form>
+
+        {% if Password %}
+        <div class="result">
+            <p>Generated Password: {{ Password }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
